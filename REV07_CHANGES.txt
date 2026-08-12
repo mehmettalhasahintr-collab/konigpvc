@@ -1,0 +1,6 @@
+KÖNİG DIGITAL PLATFORM — REV07
+Only requested fixes:
+1) Footer: removed .footerMark and switched .footBrand to KONIG_logo_white_transparent.png.
+2) Product detail viewers: real profile images are forced visible and enlarged to occupy the viewer; existing hotspot logic/images retained.
+3) Colors: existing 9-color photo system retained; initial view uses the Ceviz photo variant and color selection continues to swap only the matching profile/decor photo variant.
+No other page/content/admin structure was intentionally changed.
