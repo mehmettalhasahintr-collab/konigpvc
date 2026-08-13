@@ -4,7 +4,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {URL, fileURLToPath} from 'node:url';
 
-const ROOT=path.dirname(fileURLToPath(import.meta.url)), PUBLIC=path.join(ROOT,'public'), DATA=path.join(ROOT,'data','db.json'), UP=path.join(ROOT,'uploads');
+const ROOT=path.dirname(fileURLToPath(import.meta.url)), PUBLIC=path.join(ROOT,'public'), DATA=path.join(ROOT,'data','db.json'), UP='/tmp/konig-uploads';
 const PORT=Number(process.env.PORT||3000); const SECRET=process.env.KONIG_SESSION_SECRET||'konig-local-secret-change-me';
 fs.mkdirSync(UP,{recursive:true});
 function load(){return JSON.parse(fs.readFileSync(DATA,'utf8'))} function save(d){fs.writeFileSync(DATA,JSON.stringify(d,null,2))}
