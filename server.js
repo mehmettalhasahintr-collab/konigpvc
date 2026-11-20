@@ -24,7 +24,43 @@ function body(req){return new Promise((resolve,reject)=>{let a=[];req.on('data',
 function mime(f){return {'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.pdf':'application/pdf','.svg':'image/svg+xml'}[path.extname(f).toLowerCase()]||'application/octet-stream'}
 function safeName(n){return path.basename(n).replace(/[^a-zA-Z0-9._-]/g,'_')}
 function parseMultipart(buf,ct){const b=ct.match(/boundary=([^;]+)/)?.[1];if(!b)return {};const boundary=Buffer.from('--'+b);let out={};let pos=0;while((pos=buf.indexOf(boundary,pos))!==-1){pos+=boundary.length;if(buf.slice(pos,pos+2).toString()==='--')break;if(buf.slice(pos,pos+2).toString()==='\r\n')pos+=2;const end=buf.indexOf(boundary,pos);if(end<0)break;const part=buf.slice(pos,end-2);const sep=part.indexOf(Buffer.from('\r\n\r\n'));if(sep<0){pos=end;continue}const hs=part.slice(0,sep).toString();const data=part.slice(sep+4);const nm=hs.match(/name="([^"]+)"/);const fn=hs.match(/filename="([^"]*)"/);if(!nm){pos=end;continue}out[nm[1]]=fn?{filename:safeName(fn[1]),data}:data.toString('utf8');pos=end}return out}
-async function notifyQuote(x){const to=process.env.NOTIFY_EMAIL||'export@derapvc.com.tr';const key=process.env.RESEND_API_KEY;if(!key){console.warn('RESEND_API_KEY tanımlı değil; talep kaydedildi fakat e-posta gönderilmedi.');return}const text=[`YENİ KÖNİG TALEBİ`,`Ad Soyad: ${x.name||'-'}`,`Firma: ${x.company||'-'}`,`Telefon: ${x.phone||'-'}`,`E-posta: ${x.email||'-'}`,`Proje türü: ${x.projectType||'-'}`,`Proje konumu: ${x.location||'-'}`,`Proje büyüklüğü: ${x.size||'-'}`,`Mesaj: ${x.message||'-'}`,`Dosya: ${x.file||'-'}`,`Tarih / saat: ${x.createdAt}`].join('\n');try{const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},body:JSON.stringify({from:process.env.NOTIFY_FROM||'KONİG <onboarding@resend.dev>',to:[to],subject:'YENİ KÖNİG TALEBİ',text})});if(!r.ok)console.error('E-posta gönderilemedi:',await r.text())}catch(e){console.error('E-posta hatası:',e.message)}}
+async function notifyQuote(x){
+ const to=process.env.NOTIFY_EMAIL||'export@derapvc.com.tr';
+ const key=process.env.RESEND_API_KEY;
+ if(!key)throw new Error('E-posta servisi yapılandırılmamış (RESEND_API_KEY eksik).');
+ const text=[
+  'YENİ KÖNİG TALEBİ',
+  '',
+  `Ad Soyad: ${x.name||'-'}`,
+  `Firma: ${x.company||'-'}`,
+  `Telefon: ${x.phone||'-'}`,
+  `E-posta: ${x.email||'-'}`,
+  `Proje türü: ${x.projectType||'-'}`,
+  `Proje konumu: ${x.location||'-'}`,
+  `Proje büyüklüğü: ${x.size||'-'}`,
+  `Mesaj: ${x.message||'-'}`,
+  `Dosya: ${x.file||'-'}`,
+  `Tarih / saat: ${x.createdAt}`
+ ].join('\\n');
+ const payload={
+  from:process.env.NOTIFY_FROM||'KONİG <onboarding@resend.dev>',
+  to:[to],
+  subject:`Yeni KÖNİG proje teklifi — ${x.name||'Müşteri'}`,
+  reply_to:x.email,
+  text
+ };
+ const r=await fetch('https://api.resend.com/emails',{
+  method:'POST',
+  headers:{Authorization:`Bearer ${key}`,'Content-Type':'application/json'},
+  body:JSON.stringify(payload)
+ });
+ if(!r.ok){
+  const detail=await r.text();
+  console.error('Resend e-posta hatası:',detail);
+  throw new Error('E-posta gönderilemedi. E-posta servisi ayarlarını kontrol edin.');
+ }
+ return await r.json();
+}
 
 const server=http.createServer(async(req,res)=>{try{
  const u=new URL(req.url,`http://${req.headers.host}`); const p=u.pathname; const db=load();
@@ -32,7 +68,43 @@ const server=http.createServer(async(req,res)=>{try{
  if(p==='/api/site')return json(res,{settings:db.settings,pages:db.pages,products:db.products.filter(x=>x.active),colors:db.colors,projects:db.projects.filter(x=>x.active),catalog:db.catalog});
  if(p==='/api/login'&&req.method==='POST'){const x=JSON.parse((await body(req)).toString()||'{}');if(x.username===db.admin.username&&hash(x.password||'')===db.admin.passwordHash){const sid='admin-'+crypto.randomBytes(18).toString('hex');res.writeHead(200,{'Set-Cookie':cookie(sid),'Content-Type':'application/json'});return res.end(JSON.stringify({ok:true}))}return json(res,{error:'Kullanıcı adı veya şifre hatalı.'},401)}
  if(p==='/api/logout'&&req.method==='POST'){res.writeHead(200,{'Set-Cookie':'konig_session=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax','Content-Type':'application/json'});return res.end('{"ok":true}')} 
- if(p==='/api/quote'&&req.method==='POST'){const ct=req.headers['content-type']||'';let x={};if(ct.includes('multipart/form-data')){const fields=parseMultipart(await body(req),ct);for(const [k,v] of Object.entries(fields)){if(v&&v.data){const ext=path.extname(v.filename).toLowerCase();if(['.jpg','.jpeg','.png','.webp','.pdf'].includes(ext)){if(IS_VERCEL){const name=`konig/uploads/${Date.now()}-${v.filename}`;const blob=await put(name,v.data,{access:'private',contentType:mime(v.filename),addRandomSuffix:false});x[k]=blob.pathname}else{const name=Date.now()+'-'+v.filename;fs.writeFileSync(path.join(UP,name),v.data);x[k]='/uploads/'+name}}else x[k]=v.filename}else x[k]=v}}else{x=JSON.parse((await body(req)).toString()||'{}')}x.id=crypto.randomUUID();x.createdAt=new Date().toISOString();x.status='new';await putSubmission(x);await notifyQuote(x);return json(res,{ok:true,id:x.id},201)}
+ if(p==='/api/quote'&&req.method==='POST'){
+  const ct=req.headers['content-type']||'';
+  let x={};
+  if(ct.includes('multipart/form-data')){
+   const fields=parseMultipart(await body(req),ct);
+   for(const [k,v] of Object.entries(fields)){
+    if(v&&v.data){
+     const ext=path.extname(v.filename).toLowerCase();
+     if(['.jpg','.jpeg','.png','.webp','.pdf'].includes(ext)){
+      if(IS_VERCEL){
+       const name=`konig/uploads/${Date.now()}-${v.filename}`;
+       const blob=await put(name,v.data,{access:'private',contentType:mime(v.filename),addRandomSuffix:false});
+       x[k]=blob.pathname;
+      }else{
+       const name=Date.now()+'-'+v.filename;
+       fs.writeFileSync(path.join(UP,name),v.data);
+       x[k]='/uploads/'+name;
+      }
+     }else x[k]=v.filename;
+    }else x[k]=v;
+   }
+  }else{x=JSON.parse((await body(req)).toString()||'{}')}
+  x.projectType=x.projectType||x.type||'';
+  if(!x.name||!x.phone||!x.email||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(x.email))
+   return json(res,{ok:false,error:'Lütfen ad soyad, telefon ve geçerli e-posta adresinizi doldurun.'},400);
+  x.id=crypto.randomUUID();
+  x.createdAt=new Date().toISOString();
+  x.status='new';
+  await putSubmission(x);
+  try{
+   await notifyQuote(x);
+  }catch(e){
+   console.error('Teklif e-postası gönderilemedi:',e);
+   return json(res,{ok:false,saved:true,id:x.id,error:'Talebiniz kaydedildi ancak e-posta gönderilemedi. Lütfen daha sonra tekrar deneyin.'},502);
+  }
+  return json(res,{ok:true,id:x.id},201);
+ }
  if(p==='/api/admin/me')return json(res,{authenticated:auth(req)});
  if(p.startsWith('/api/admin/')){if(!auth(req))return json(res,{error:'Yetkisiz erişim.'},401);const parts=p.split('/').filter(Boolean);const resource=parts[2];const id=parts[3];
    if(req.method==='GET'){
