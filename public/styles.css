@@ -303,3 +303,10 @@ html,body{max-width:100%;overflow-x:hidden}
   .configColor{min-height:84px}
   .configSwatch{height:32px}
 }
+
+
+/* Real product photo preview for the walnut decor */
+.configPhoto{display:none;width:min(900px,100%);height:auto;max-height:100%;object-fit:contain;position:relative;z-index:3;filter:drop-shadow(12px 22px 24px rgba(0,0,0,.16));}
+.configWindowStage[data-photo="true"] .configPhoto{display:block}
+.configWindowStage[data-photo="true"] #configWindow{display:none}
+.configWindowStage[data-photo="true"] .configWindowShadow{width:62%;left:19%;bottom:15%}
