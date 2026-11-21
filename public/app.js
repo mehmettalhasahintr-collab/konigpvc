@@ -47,7 +47,8 @@ function colors(){
  <section class="colorConfigurator section">
    <div class="configWindowPanel">
      <div class="configWindowStage">
-       <div class="configWindow" id="configWindow" data-color="0" aria-label="KÖNİG 120 x 120 PVC pencere konfigüratörü">
+       <img class="configPhoto" id="configPhoto" src="/assets/ceviz-window.webp" alt="KÖNİG ceviz dekor PVC pencere ürün görseli" decoding="async">
+       <div class="configWindow" id="configWindow" data-color="0" aria-label="KÖNİG PVC pencere konfigüratörü">
          <div class="cwFrame cwTop"></div><div class="cwFrame cwBottom"></div><div class="cwFrame cwLeft"></div><div class="cwFrame cwRight"></div>
          <div class="cwMullion"></div><div class="cwTransom"></div>
          <div class="cwGlass cwGlassTL"></div><div class="cwGlass cwGlassTR"></div><div class="cwGlass cwGlassBL"></div><div class="cwGlass cwGlassBR"></div>
@@ -173,6 +174,8 @@ function bind(){
     document.querySelectorAll('.configColor').forEach(x=>{x.classList.remove('selected');x.setAttribute('aria-pressed','false')});
     btn.classList.add('selected');btn.setAttribute('aria-pressed','true');
     const win=$('#configWindow'); if(win)win.dataset.color=String(i);
+    const stage=win?.closest('.configWindowStage'); if(stage)stage.dataset.photo=String(i===0);
+    const photo=$('#configPhoto'); if(photo)photo.alt='KÖNİG '+(btn.querySelector('b')?.textContent||'')+' dekor PVC pencere ürün görseli';
     const name=btn.querySelector('b')?.textContent||'Renk / Dekor';
     const cn=$('#colorName'), md=$('#colorMetaName'), mi=$('#colorMetaIndex'); if(cn)cn.textContent=name;if(md)md.textContent=name;if(mi)mi.textContent=String(i+1).padStart(2,'0')+' / 09';
   }));
