@@ -46,7 +46,7 @@ function colors(){
  ${pageHero('KÖNİG / RENK & DEKOR','Mimarinin<br><em>tonunu seçin.</em>','Aynı PVC pencere geometrisi üzerinde katalogdaki dokuz renk/dekor seçeneğini inceleyin.')}
  <section class="colorConfigurator section">
    <div class="configWindowPanel">
-     <div class="configWindowStage">
+     <div class="configWindowStage" data-photo="true">
        <img class="configPhoto" id="configPhoto" src="/assets/ceviz-window.webp" alt="KÖNİG ceviz dekor PVC pencere ürün görseli" decoding="async">
        <div class="configWindow" id="configWindow" data-color="0" aria-label="KÖNİG PVC pencere konfigüratörü">
          <div class="cwFrame cwTop"></div><div class="cwFrame cwBottom"></div><div class="cwFrame cwLeft"></div><div class="cwFrame cwRight"></div>
