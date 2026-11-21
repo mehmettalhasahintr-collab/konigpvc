@@ -91,7 +91,10 @@ const server=http.createServer(async(req,res)=>{try{
    }
   }else{x=JSON.parse((await body(req)).toString()||'{}')}
   x.projectType=x.projectType||x.type||'';
-  if(!x.name||!x.phone||!x.email||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(x.email))
+  x.name=String(x.name||'').trim();
+  x.phone=String(x.phone||'').trim();
+  x.email=String(x.email||'').trim();
+  if(!x.name||!x.phone||!x.email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x.email))
    return json(res,{ok:false,error:'Lütfen ad soyad, telefon ve geçerli e-posta adresinizi doldurun.'},400);
   x.id=crypto.randomUUID();
   x.createdAt=new Date().toISOString();
