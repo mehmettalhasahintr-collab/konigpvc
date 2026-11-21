@@ -7,9 +7,9 @@ function footer(){const site=DATA.site||{};return `<footer><div class="footerCta
 function pageHero(kicker,title,sub=''){return `<section class="pageHero"><span class="eyebrow">${kicker}</span><h1>${title}</h1>${sub?`<p>${sub}</p>`:''}</section>`}
 function productCard(p,i){return `<article class="productCard"><div class="pnum">0${i+1}</div><div class="pvisual"><img src="${p.image}" alt="${p.name} profil kesiti" loading="lazy"></div><div class="pbody"><span>${p.type}</span><h3>${p.name}</h3><p>${p.description}</p><div class="miniSpecs"><b>${esc(p.profile)}<small>PROFİL</small></b><b>${esc(p.seals)}<small>CONTA</small></b><b>${esc(p.chambers)}<small>ODACIK</small></b></div><a class="textLink" href="/sistemler/${p.id}">SİSTEMİ İNCELE ↗</a></div></article>`}
 function home(){return `<main><section class="hero"><div class="heroCopy"><span class="eyebrow">KÖNİG / PVC KAPI &amp; PENCERE SİSTEMLERİ</span><h1>${esc(DATA.pages.home.title||'Yapının karakterini oluşturan sistem.')}</h1><p>${esc(DATA.pages.home.subtitle)}</p><div class="actions"><a class="btn dark" href="/sistemler">SİSTEMLERİ KEŞFET ↗</a><a class="btn outline" href="/teklif">${esc(DATA.pages.home.cta||'PROJE TEKLİFİ AL')}</a></div></div><div class="heroImage"><div class="heroCarousel" id="heroCarousel">
-  <figure class="heroSlide isActive"><img src="/assets/prime60.jpeg" alt="KÖNİG PRIME 60 gerçek profil kesiti"><figcaption>PRIME 60</figcaption></figure>
+  <figure class="heroSlide isActive"><img src="/assets/thermo81.jpeg" alt="KÖNİG THERMO 81 gerçek profil kesiti"><figcaption>THERMO 81</figcaption></figure>
   <figure class="heroSlide"><img src="/assets/prime70.jpeg" alt="KÖNİG PRIME 70 gerçek profil kesiti"><figcaption>PRIME 70</figcaption></figure>
-  <figure class="heroSlide"><img src="/assets/thermo81.jpeg" alt="KÖNİG THERMO 81 gerçek profil kesiti"><figcaption>THERMO 81</figcaption></figure>
+  <figure class="heroSlide"><img src="/assets/prime60.jpeg" alt="KÖNİG PRIME 60 gerçek profil kesiti"><figcaption>PRIME 60</figcaption></figure>
   <figure class="heroSlide"><img src="/assets/slide.jpeg" alt="KÖNİG SLIDE gerçek profil kesiti"><figcaption>SLIDE</figcaption></figure>
   <div class="heroFrame"></div>
   <span class="heroSystemLabel">01 / 04 · GERÇEK KESİT</span>
@@ -126,7 +126,7 @@ async function adminApp(){const r=await fetch('/api/admin/me');const me=await r.
  document.querySelectorAll('.adminShell aside button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;renderTab()});$('#logout')?.addEventListener('click',async()=>{await fetch('/api/logout',{method:'POST'});location.href='/admin'});renderTab()}
 let heroCarouselTimer=null;
 function bind(){
-  // Homepage profile carousel: PRIME 60 -> PRIME 70 -> THERMO 81 -> SLIDE.
+  // Homepage profile carousel: THERMO 81 -> PRIME 70 -> PRIME 60 -> SLIDE.
   if(heroCarouselTimer){clearInterval(heroCarouselTimer);heroCarouselTimer=null}
   const hero=$('#heroCarousel');
   if(hero){
