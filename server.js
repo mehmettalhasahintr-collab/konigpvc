@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {URL, fileURLToPath} from 'node:url';
-import {put, get, list} from '@vercel/blob';
+import {put, get, list, del} from '@vercel/blob';
 
 const ROOT=path.dirname(fileURLToPath(import.meta.url)), PUBLIC=path.join(ROOT,'public'), DATA=path.join(ROOT,'data','db.json'), UP='/tmp/konig-uploads';
 const PORT=Number(process.env.PORT||3000); const SECRET=process.env.KONIG_SESSION_SECRET||(process.env.VERCEL?'':'konig-local-secret-change-me');
@@ -12,9 +12,9 @@ const IS_VERCEL=Boolean(process.env.VERCEL);
 fs.mkdirSync(UP,{recursive:true});
 async function load(){if(IS_VERCEL){const t=await blobText(DB_BLOB);return t?JSON.parse(t):JSON.parse(fs.readFileSync(DATA,'utf8'))}return JSON.parse(fs.readFileSync(DATA,'utf8'))}
 async function save(d){const value=JSON.stringify(d,null,2);if(IS_VERCEL){await put(DB_BLOB,value,{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:true});return}fs.writeFileSync(DATA,value)}
-async function blobText(pathname){const r=await get(pathname,{access:'private'});if(!r||r.statusCode!==200)return null;const chunks=[];for await(const c of r.stream)chunks.push(Buffer.from(c));return Buffer.concat(chunks).toString('utf8')}
+async function blobText(pathname){try{const r=await get(pathname,{access:'private'});if(!r||r.statusCode!==200)return null;const chunks=[];for await(const c of r.stream)chunks.push(Buffer.from(c));return Buffer.concat(chunks).toString('utf8')}catch(e){if(e.status===404||e.statusCode===404||/not found/i.test(e.message))return null;throw e}}
 async function getSubmissions(){if(!IS_VERCEL)return (await load()).submissions||[];const {blobs}=await list({prefix:'konig/submissions/',limit:1000});const out=[];for(const b of blobs){const t=await blobText(b.pathname);if(t)try{out.push(JSON.parse(t))}catch{}}return out.sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)))}
-async function putSubmission(x){if(!IS_VERCEL){const db=await load();db.submissions=db.submissions||[];db.submissions.push(x);await await save(db);return}await put(`konig/submissions/${x.id}.json`,JSON.stringify(x),{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:true})}
+async function putSubmission(x){if(!IS_VERCEL){const db=await load();db.submissions=db.submissions||[];db.submissions.push(x);await save(db);return}await put(`konig/submissions/${x.id}.json`,JSON.stringify(x),{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:true})}
 async function updateSubmission(id,patch){if(!IS_VERCEL){const db=await load();const i=(db.submissions||[]).findIndex(a=>a.id===id);if(i<0)return null;db.submissions[i]={...db.submissions[i],...patch};await save(db);return db.submissions[i]}const pathname=`konig/submissions/${id}.json`;const t=await blobText(pathname);if(!t)return null;const x={...JSON.parse(t),...patch};await put(pathname,JSON.stringify(x),{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:true});return x}
 function hash(s){return crypto.createHash('sha256').update(s).digest('hex')}
 function sign(v){return crypto.createHmac('sha256',SECRET).update(v).digest('hex')}
@@ -117,22 +117,22 @@ const server=http.createServer(async(req,res)=>{try{
     if(resource==='projects')return json(res,db.projects);
     if(resource==='submissions')return json(res,await getSubmissions());
    }
-   if(req.method==='PUT'&&resource==='settings'){Object.assign(db.settings,JSON.parse((await body(req)).toString()));save(db);return json(res,{ok:true,settings:db.settings})}
-   if(req.method==='PUT'&&resource==='pages'){Object.assign(db.pages,JSON.parse((await body(req)).toString()));save(db);return json(res,{ok:true,pages:db.pages})}
-   if(req.method==='PUT'&&resource==='products'&&id){const x=JSON.parse((await body(req)).toString());const i=db.products.findIndex(a=>a.id===id);if(i<0)return json(res,{error:'Ürün bulunamadı'},404);db.products[i]={...db.products[i],...x,id};save(db);return json(res,{ok:true,product:db.products[i]})}
-   if(req.method==='POST'&&resource==='products'){const x=JSON.parse((await body(req)).toString());if(!x.id)x.id=crypto.randomUUID();x.active=x.active!==false;db.products.push(x);save(db);return json(res,{ok:true,product:x},201)}
-   if(req.method==='DELETE'&&resource==='products'&&id){db.products=db.products.filter(x=>x.id!==id);save(db);return json(res,{ok:true})}
+   if(req.method==='PUT'&&resource==='settings'){Object.assign(db.settings,JSON.parse((await body(req)).toString()));await save(db);return json(res,{ok:true,settings:db.settings})}
+   if(req.method==='PUT'&&resource==='pages'){Object.assign(db.pages,JSON.parse((await body(req)).toString()));await save(db);return json(res,{ok:true,pages:db.pages})}
+   if(req.method==='PUT'&&resource==='products'&&id){const x=JSON.parse((await body(req)).toString());const i=db.products.findIndex(a=>a.id===id);if(i<0)return json(res,{error:'Ürün bulunamadı'},404);db.products[i]={...db.products[i],...x,id};await save(db);return json(res,{ok:true,product:db.products[i]})}
+   if(req.method==='POST'&&resource==='products'){const x=JSON.parse((await body(req)).toString());if(!x.id)x.id=crypto.randomUUID();x.active=x.active!==false;db.products.push(x);await save(db);return json(res,{ok:true,product:x},201)}
+   if(req.method==='DELETE'&&resource==='products'&&id){db.products=db.products.filter(x=>x.id!==id);await save(db);return json(res,{ok:true})}
    if(req.method==='PUT'&&resource==='submissions'&&id){const x=JSON.parse((await body(req)).toString());const updated=await updateSubmission(id,{status:x.status});if(!updated)return json(res,{error:'Talep bulunamadı'},404);return json(res,{ok:true,submission:updated})}
-   if(req.method==='POST'&&resource==='projects'){const x=JSON.parse((await body(req)).toString());x.id=x.id||crypto.randomUUID();x.createdAt=new Date().toISOString();db.projects.push(x);save(db);return json(res,{ok:true,project:x},201)}
-   if(req.method==='PUT'&&resource==='projects'&&id){const x=JSON.parse((await body(req)).toString());const i=db.projects.findIndex(a=>a.id===id);if(i<0)return json(res,{error:'Proje bulunamadı'},404);db.projects[i]={...db.projects[i],...x,id};save(db);return json(res,{ok:true,project:db.projects[i]})}
-   if(req.method==='DELETE'&&resource==='projects'&&id){db.projects=db.projects.filter(x=>x.id!==id);save(db);return json(res,{ok:true})}
-   if(req.method==='PUT'&&resource==='colors'){db.colors=JSON.parse((await body(req)).toString());save(db);return json(res,{ok:true,colors:db.colors})}
-   if(req.method==='PUT'&&resource==='catalog'){const x=JSON.parse((await body(req)).toString());db.catalog=x.catalog;save(db);return json(res,{ok:true,catalog:db.catalog})}
-   if(req.method==='POST'&&resource==='password'){const x=JSON.parse((await body(req)).toString());if(!x.password||x.password.length<10)return json(res,{error:'Şifre en az 10 karakter olmalı.'},400);db.admin.passwordHash=hash(x.password);save(db);return json(res,{ok:true})}
+   if(req.method==='POST'&&resource==='projects'){const x=JSON.parse((await body(req)).toString());x.id=x.id||crypto.randomUUID();x.createdAt=new Date().toISOString();db.projects.push(x);await save(db);return json(res,{ok:true,project:x},201)}
+   if(req.method==='PUT'&&resource==='projects'&&id){const x=JSON.parse((await body(req)).toString());const i=db.projects.findIndex(a=>a.id===id);if(i<0)return json(res,{error:'Proje bulunamadı'},404);db.projects[i]={...db.projects[i],...x,id};await save(db);return json(res,{ok:true,project:db.projects[i]})}
+   if(req.method==='DELETE'&&resource==='projects'&&id){db.projects=db.projects.filter(x=>x.id!==id);await save(db);return json(res,{ok:true})}
+   if(req.method==='PUT'&&resource==='colors'){db.colors=JSON.parse((await body(req)).toString());await save(db);return json(res,{ok:true,colors:db.colors})}
+   if(req.method==='PUT'&&resource==='catalog'){const x=JSON.parse((await body(req)).toString());db.catalog=x.catalog;await save(db);return json(res,{ok:true,catalog:db.catalog})}
+   if(req.method==='POST'&&resource==='password'){const x=JSON.parse((await body(req)).toString());if(!x.password||x.password.length<10)return json(res,{error:'Şifre en az 10 karakter olmalı.'},400);db.admin.passwordHash=hash(x.password);await save(db);return json(res,{ok:true})}
    if(req.method==='POST'&&resource==='upload'){const b=await body(req);const fields=parseMultipart(b,req.headers['content-type']||'');const file=fields.file;if(!file||!file.filename)return json(res,{error:'Dosya bulunamadı'},400);const ext=path.extname(file.filename).toLowerCase();if(!['.jpg','.jpeg','.png','.webp','.pdf'].includes(ext))return json(res,{error:'Desteklenmeyen dosya.'},400);if(IS_VERCEL){const blob=await put(`konig/uploads/${Date.now()}-${file.filename}`,file.data,{access:'private',contentType:mime(file.filename),addRandomSuffix:false});return json(res,{ok:true,url:blob.pathname})}const name=Date.now()+'-'+file.filename;fs.writeFileSync(path.join(UP,name),file.data);return json(res,{ok:true,url:'/uploads/'+name})}
    if(req.method==='PUT'&&resource==='db'){const x=JSON.parse((await body(req)).toString());if(!x||typeof x!=='object'||Array.isArray(x))return json(res,{error:'Geçersiz veri.'},400);await save(x);return json(res,{ok:true})}
    if(req.method==='GET'&&resource==='media'){if(IS_VERCEL){const {blobs}=await list({prefix:'konig/uploads/',limit:1000});return json(res,blobs.map(b=>({name:b.pathname,url:b.pathname,size:b.size}))) }const files=fs.readdirSync(UP).filter(f=>!f.startsWith('.')).map(name=>({name,url:'/uploads/'+name,size:fs.statSync(path.join(UP,name)).size}));return json(res,files)}
-   if(req.method==='DELETE'&&resource==='media'&&id){if(IS_VERCEL)return json(res,{error:'Vercel medya silme bu sürümde devre dışı.'},501);const name=safeName(decodeURIComponent(id));const target=path.join(UP,name);if(!target.startsWith(UP)||!fs.existsSync(target))return json(res,{error:'Dosya bulunamadı'},404);fs.unlinkSync(target);return json(res,{ok:true})}
+   if(req.method==='DELETE'&&resource==='media'&&id){if(IS_VERCEL){await del(`konig/uploads/${decodeURIComponent(id)}`,{access:'private'});return json(res,{ok:true})}const name=safeName(decodeURIComponent(id));const target=path.join(UP,name);if(!target.startsWith(UP)||!fs.existsSync(target))return json(res,{error:'Dosya bulunamadı'},404);fs.unlinkSync(target);return json(res,{ok:true})}
    return json(res,{error:'Admin endpoint bulunamadı'},404);
  }
  if(p.startsWith('/uploads/')){const f=path.join(UP,safeName(p.slice(9)));if(!f.startsWith(UP)||!fs.existsSync(f))return res.writeHead(404).end();res.writeHead(200,{'Content-Type':mime(f)});return fs.createReadStream(f).pipe(res)}
