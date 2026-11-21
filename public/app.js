@@ -124,7 +124,38 @@ async function adminApp(){const r=await fetch('/api/admin/me');const me=await r.
  function renderContact(){content.innerHTML=`<div class="adminPanel"><h2>İletişim</h2><form id="settingsForm" class="editGrid">${Object.entries(d.settings).map(([k,v])=>`<label>${k}<input name="${k}" value="${esc(v)}"></label>`).join('')}<button class="btn dark">İLETİŞİM BİLGİLERİNİ KAYDET</button></form></div>`;$('#settingsForm').onsubmit=async e=>{e.preventDefault();await fetch('/api/admin/settings',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(e.target)))});refresh()}}
  function renderSecurity(){content.innerHTML=`<div class="adminPanel"><h2>Güvenlik</h2><form id="passForm"><input type="password" name="password" placeholder="Yeni admin şifresi"><button class="btn dark">ŞİFREYİ DEĞİŞTİR</button></form><p>Şifreler sunucuda hash olarak saklanır; frontend koduna gömülmez.</p></div>`;$('#passForm').onsubmit=async e=>{e.preventDefault();const x=Object.fromEntries(new FormData(e.target));const r=await fetch('/api/admin/password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(x)});alert((await r.json()).ok?'Şifre güncellendi.':'İşlem başarısız.')}}
  document.querySelectorAll('.adminShell aside button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;renderTab()});$('#logout')?.addEventListener('click',async()=>{await fetch('/api/logout',{method:'POST'});location.href='/admin'});renderTab()}
+let heroCarouselTimer=null;
 function bind(){
+  // Homepage profile carousel: PRIME 60 -> PRIME 70 -> THERMO 81 -> SLIDE.
+  if(heroCarouselTimer){clearInterval(heroCarouselTimer);heroCarouselTimer=null}
+  const hero=$('#heroCarousel');
+  if(hero){
+    const slides=[...hero.querySelectorAll('.heroSlide')];
+    const dots=[...hero.querySelectorAll('.heroDots i')];
+    const label=hero.querySelector('.heroSystemLabel');
+    let current=Math.max(0,slides.findIndex(s=>s.classList.contains('isActive')));
+    const showSlide=(index)=>{
+      current=(index+slides.length)%slides.length;
+      slides.forEach((slide,i)=>slide.classList.toggle('isActive',i===current));
+      dots.forEach((dot,i)=>{dot.classList.toggle('active',i===current);dot.setAttribute('aria-pressed',String(i===current))});
+      if(label)label.textContent=String(current+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0')+' · GERÇEK KESİT';
+    };
+    dots.forEach((dot,i)=>{
+      dot.setAttribute('role','button');
+      dot.setAttribute('tabindex','0');
+      dot.setAttribute('aria-label',slides[i]?.querySelector('figcaption')?.textContent||('Kesit '+(i+1)));
+      dot.addEventListener('click',()=>{showSlide(i);startHeroCarousel()});
+      dot.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();showSlide(i);startHeroCarousel()}});
+    });
+    function startHeroCarousel(){
+      if(heroCarouselTimer)clearInterval(heroCarouselTimer);
+      heroCarouselTimer=setInterval(()=>showSlide(current+1),4500);
+    }
+    showSlide(current);
+    startHeroCarousel();
+    hero.addEventListener('mouseenter',()=>{if(heroCarouselTimer){clearInterval(heroCarouselTimer);heroCarouselTimer=null}});
+    hero.addEventListener('mouseleave',startHeroCarousel);
+  }
   // Color Studio: same window/scene, only the profile/decor visual changes.
   const colorMap=['ceviz','altin-mese','maun','koyu-kahve','antrasit','yosun-yesili','mersey-mese','titanyum-gumus','cinko-gumus'];
   document.querySelectorAll('.colorOption').forEach(btn=>btn.addEventListener('click',()=>{
