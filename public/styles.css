@@ -310,3 +310,75 @@ html,body{max-width:100%;overflow-x:hidden}
 .configWindowStage[data-photo="true"] .configPhoto{display:block}
 .configWindowStage[data-photo="true"] #configWindow{display:none}
 .configWindowStage[data-photo="true"] .configWindowShadow{width:62%;left:19%;bottom:15%}
+
+
+/* KÖNİG COLOR STUDIO — premium layout, matching the existing graphite/red identity */
+.colorStudio{max-width:var(--max);display:grid;grid-template-columns:1.12fr .88fr;gap:0;padding-top:55px;align-items:stretch}
+.colorStudioVisual{min-width:0;background:#ecece8;border:1px solid var(--line);display:flex;flex-direction:column;min-height:760px}
+.colorStudioTop,.colorStudioBottom{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;font:500 9px 'DM Mono',monospace;letter-spacing:.12em;color:#777;border-bottom:1px solid var(--line)}
+.colorStudioBottom{border-top:1px solid var(--line);border-bottom:0;background:#f4f4f1;gap:14px}
+.colorStudioBottom strong{font:600 20px Manrope,Arial,sans-serif;letter-spacing:-.04em;color:var(--ink);margin-right:auto}
+.colorStudioBottom em{font:500 9px 'DM Mono',monospace;color:var(--red);font-style:normal}
+.colorStudioStage{position:relative;flex:1;min-height:620px;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#fff 0%,#f7f7f4 48%,#e4e4e0 100%);isolation:isolate}
+.colorStudioStage:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.8),transparent 36%),radial-gradient(ellipse at 50% 90%,rgba(0,0,0,.12),transparent 46%);pointer-events:none}
+.catalogWindow{--wood1:#7b4a2e;--wood2:#4b2918;position:relative;z-index:2;width:min(610px,78%);aspect-ratio:1.04/1;filter:drop-shadow(18px 24px 23px rgba(0,0,0,.2));transition:filter .3s ease}
+.catalogOuter{position:absolute;inset:0;background:linear-gradient(140deg,color-mix(in srgb,var(--wood1) 82%,white),var(--wood1) 45%,var(--wood2));box-shadow:inset 3px 3px 6px rgba(255,255,255,.45),inset -6px -7px 12px rgba(0,0,0,.3),0 0 0 1px rgba(0,0,0,.22)}
+.catalogOuter:after,.catalogFrame:after,.catalogMullion:after,.catalogSash:after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(94deg,transparent 0 15px,rgba(255,255,255,.1) 15px 16px,transparent 16px 24px),linear-gradient(110deg,rgba(255,255,255,.14),transparent 30%,rgba(0,0,0,.12));mix-blend-mode:soft-light}
+.catalogPane{position:absolute;z-index:2;top:8%;bottom:8%;width:40%;background:linear-gradient(145deg,#f8fcfc 0%,#d9e5e8 48%,#eef3f3 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.8),inset 0 -18px 30px rgba(48,72,80,.08);overflow:hidden}
+.catalogPane:before{content:"";position:absolute;inset:-20%;background:linear-gradient(112deg,transparent 36%,rgba(255,255,255,.72) 48%,transparent 59%);transform:rotate(-7deg)}
+.catalogPane i{position:absolute;left:7%;right:7%;top:5%;height:1px;background:rgba(255,255,255,.9)}
+.catalogPaneLeft{left:8%}.catalogPaneRight{right:8%}
+.catalogMullion{position:absolute;z-index:5;top:0;bottom:0;left:47%;width:6%;background:linear-gradient(100deg,color-mix(in srgb,var(--wood1) 75%,white),var(--wood1) 45%,var(--wood2));box-shadow:inset 2px 0 3px rgba(255,255,255,.35),inset -3px 0 5px rgba(0,0,0,.25)}
+.catalogSash{position:absolute;z-index:4;top:5.5%;bottom:5.5%;width:43%;border:clamp(9px,1.5vw,17px) solid var(--wood1);background:transparent;box-shadow:inset 0 0 0 1px rgba(0,0,0,.16),0 0 0 1px rgba(0,0,0,.18);pointer-events:none}
+.catalogSashLeft{left:5.5%}.catalogSashRight{right:5.5%}
+.catalogSash:before{content:"";position:absolute;inset:-10px;border:2px solid color-mix(in srgb,var(--wood1) 78%,white);opacity:.5}
+.catalogFrame{position:absolute;z-index:7;background:linear-gradient(145deg,color-mix(in srgb,var(--wood1) 82%,white),var(--wood1) 48%,var(--wood2));box-shadow:inset 2px 2px 5px rgba(255,255,255,.36),inset -4px -5px 8px rgba(0,0,0,.28)}
+.catalogFrameTop,.catalogFrameBottom{left:0;right:0;height:7.5%}.catalogFrameTop{top:0}.catalogFrameBottom{bottom:0}
+.catalogFrameLeft,.catalogFrameRight{top:0;bottom:0;width:7.5%}.catalogFrameLeft{left:0}.catalogFrameRight{right:0}
+.catalogHandle{position:absolute;z-index:9;left:50%;top:52%;width:12px;height:54px;transform:translateX(-50%);border-radius:7px;background:linear-gradient(90deg,#25282a,#d9dcda 48%,#55595a 75%,#242628);box-shadow:2px 4px 8px rgba(0,0,0,.32)}
+.catalogHandle:before{content:"";position:absolute;left:-5px;top:8px;width:22px;height:9px;border-radius:6px;background:linear-gradient(#e3e5e3,#626667)}
+.catalogShadow{position:absolute;z-index:1;width:64%;height:6%;bottom:13%;left:18%;border-radius:50%;background:rgba(0,0,0,.2);filter:blur(24px)}
+.catalogWatermark{position:absolute;right:22px;bottom:20px;color:rgba(30,32,32,.25);font:800 13px Manrope,sans-serif;letter-spacing:.18em}
+.catalogWatermark i{font:500 7px 'DM Mono',monospace;letter-spacing:.12em;display:block;text-align:right;margin-top:3px}
+.catalogWindow[data-color="0"]{--wood1:#7b4a2e;--wood2:#4b2918}
+.catalogWindow[data-color="1"]{--wood1:#b98945;--wood2:#725128}
+.catalogWindow[data-color="2"]{--wood1:#79362e;--wood2:#421b18}
+.catalogWindow[data-color="3"]{--wood1:#38271f;--wood2:#17100d}
+.catalogWindow[data-color="4"]{--wood1:#4a4e50;--wood2:#24272a}
+.catalogWindow[data-color="5"]{--wood1:#50685b;--wood2:#2d3c34}
+.catalogWindow[data-color="6"]{--wood1:#8c745d;--wood2:#514436}
+.catalogWindow[data-color="7"]{--wood1:#aeb1b3;--wood2:#73777a}
+.catalogWindow[data-color="8"]{--wood1:#d0d1d1;--wood2:#85898b}
+.colorStudioPanel{background:#fff;padding:72px clamp(28px,5vw,76px);min-width:0}
+.colorStudioPanel h2{font-size:clamp(58px,6.4vw,96px);line-height:.86;letter-spacing:-.08em;margin:12px 0 18px}
+.colorStudioIntro{font-size:13px;line-height:1.8;color:var(--muted);margin:0 0 32px;max-width:390px}
+.colorStudioGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.colorStudioGrid .configColor{padding:8px;min-height:86px;display:flex;flex-direction:column;gap:9px;background:#f7f7f4;border:1px solid var(--line);text-align:left;cursor:pointer;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.colorStudioGrid .configColor:hover{transform:translateY(-2px);border-color:#888}
+.colorStudioGrid .configColor.selected{border:1.5px solid var(--red);background:#fff;box-shadow:0 7px 18px rgba(0,0,0,.07)}
+.colorStudioGrid .configSwatch{display:block;grid-column:auto;width:100%;height:43px;background:linear-gradient(145deg,color-mix(in srgb,var(--chip) 78%,white),var(--chip) 54%,color-mix(in srgb,var(--chip) 75%,black));box-shadow:inset 0 8px 14px rgba(255,255,255,.18),inset 0 -7px 10px rgba(0,0,0,.14);position:relative}
+.colorStudioGrid .configSwatch:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,255,255,.13) 0 1px,transparent 1px 5px,rgba(0,0,0,.07) 5px 6px,transparent 6px 12px);mix-blend-mode:soft-light}
+.colorChoiceText{display:flex;align-items:center;justify-content:space-between;gap:4px;width:100%}
+.colorChoiceText b{font-size:9px;line-height:1.2;font-weight:700;overflow-wrap:anywhere}
+.colorChoiceText small{font:500 8px 'DM Mono',monospace;color:#777}
+.colorStudioGrid .configColor.selected .colorChoiceText:after{content:"✓";display:grid;place-items:center;flex:none;width:15px;height:15px;border-radius:50%;background:var(--red);color:white;font:700 9px Arial,sans-serif}
+.colorStudioFoot{margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
+.colorStudioFoot>span{font:500 8px 'DM Mono',monospace;letter-spacing:.13em;color:#777}
+.colorStudioFoot p{font-size:11px;line-height:1.6;color:var(--muted);margin:8px 0 18px}
+.colorStudioFoot .btn{width:100%;justify-content:space-between}
+@media(max-width:1100px){.colorStudio{grid-template-columns:1fr}.colorStudioVisual{min-height:650px}.colorStudioStage{min-height:540px}.colorStudioPanel{padding:56px 7vw}}
+@media(max-width:700px){
+ .colorStudio{padding-top:28px}
+ .colorStudioVisual{min-height:0}
+ .colorStudioTop,.colorStudioBottom{padding:14px}
+ .colorStudioStage{min-height:390px}
+ .catalogWindow{width:min(430px,84%)}
+ .catalogHandle{height:38px;width:9px}
+ .colorStudioPanel{padding:42px 6vw}
+ .colorStudioPanel h2{font-size:58px}
+ .colorStudioGrid{gap:7px}
+ .colorStudioGrid .configColor{padding:6px;min-height:74px;gap:7px}
+ .colorStudioGrid .configSwatch{height:32px}
+ .colorChoiceText b{font-size:8px}
+ .catalogWatermark{right:12px;bottom:12px;font-size:10px}
+}
