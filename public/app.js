@@ -43,31 +43,36 @@ function colors(){
  const swatches=['#7b4a2e','#b98945','#79362e','#38271f','#4a4e50','#50685b','#8c745d','#aeb1b3','#d0d1d1'];
  const first=DATA.colors[0]||'Ceviz';
  return `<main>
- ${pageHero('KÖNİG / RENK & DEKOR','Mimarinin<br><em>tonunu seçin.</em>','Aynı PVC pencere geometrisi üzerinde katalogdaki dokuz renk/dekor seçeneğini inceleyin.')}
- <section class="colorConfigurator section">
-   <div class="configWindowPanel">
-     <div class="configWindowStage" data-photo="true">
-       <img class="configPhoto" id="configPhoto" src="/assets/ceviz-window.webp" alt="KÖNİG ceviz dekor PVC pencere ürün görseli" decoding="async">
-       <div class="configWindow" id="configWindow" data-color="0" aria-label="KÖNİG PVC pencere konfigüratörü">
-         <div class="cwFrame cwTop"></div><div class="cwFrame cwBottom"></div><div class="cwFrame cwLeft"></div><div class="cwFrame cwRight"></div>
-         <div class="cwMullion"></div><div class="cwTransom"></div>
-         <div class="cwGlass cwGlassTL"></div><div class="cwGlass cwGlassTR"></div><div class="cwGlass cwGlassBL"></div><div class="cwGlass cwGlassBR"></div>
-         <div class="cwSash"><div class="cwSashGlass"></div></div>
-         <div class="cwHandle"><i></i></div>
-         <div class="cwEdge cwEdgeTop"></div><div class="cwEdge cwEdgeLeft"></div><div class="cwEdge cwEdgeRight"></div><div class="cwEdge cwEdgeBottom"></div>
+ ${pageHero('KÖNİG / RENK & DEKOR','Mimarinin<br><em>tonunu seçin.</em>','KÖNİG PVC pencere sistemleri için dokuz farklı renk ve dekor seçeneğini keşfedin.')}
+ <section class="colorConfigurator section colorStudio">
+   <div class="colorStudioVisual">
+     <div class="colorStudioTop"><span>01 / ÜRÜN ÖNİZLEMESİ</span><span>120 × 120 CM</span></div>
+     <div class="colorStudioStage">
+       <div class="catalogWindow" id="configWindow" data-color="0" role="img" aria-label="KÖNİG çift kanatlı PVC pencere renk önizlemesi">
+         <div class="catalogOuter"></div>
+         <div class="catalogPane catalogPaneLeft"><i></i></div>
+         <div class="catalogPane catalogPaneRight"><i></i></div>
+         <div class="catalogMullion"></div>
+         <div class="catalogSash catalogSashLeft"></div>
+         <div class="catalogSash catalogSashRight"></div>
+         <div class="catalogHandle"></div>
+         <div class="catalogFrame catalogFrameTop"></div><div class="catalogFrame catalogFrameBottom"></div>
+         <div class="catalogFrame catalogFrameLeft"></div><div class="catalogFrame catalogFrameRight"></div>
        </div>
-       <div class="configWindowShadow"></div>
-       <span class="configScale">120 × 120 CM · VISUAL PRODUCT CONFIGURATOR</span>
+       <div class="catalogShadow"></div>
+       <span class="catalogWatermark">KÖNİG <i>WINDOW SYSTEMS</i></span>
      </div>
+     <div class="colorStudioBottom"><span>SEÇİLİ DEKOR</span><strong id="colorMetaName">${esc(first)}</strong><em id="colorMetaIndex">01 / 09</em></div>
    </div>
-   <aside class="colorConfiguratorPanel">
-     <span class="eyebrow">RENK / DEKOR</span><h2 id="colorName">${esc(first)}</h2><p>KÖNİG renk/dekor seçeneği</p>
-     <div class="configColorGrid">${DATA.colors.slice(0,9).map((c,i)=>`<button class="configColor ${i===0?'selected':''}" data-color="${i}" aria-pressed="${i===0}" style="--chip:${swatches[i]}"><span class="configSwatch"></span><b>${esc(c)}</b><small>${String(i+1).padStart(2,'0')}</small></button>`).join('')}</div>
-     <div class="configSelected"><span>SEÇİLEN DEKOR</span><strong id="colorMetaName">${esc(first)}</strong><em id="colorMetaIndex">01 / 09</em></div>
-     <div class="configNote"><b>3D ÜRÜN SUNUMU</b><span>HTML/CSS ile oluşturulmuş görsel ürün deneyimidir. Geometri, cam ve donanım sabit tutulur; renk seçimi yalnızca PVC yüzeylerini değiştirir.</span></div>
+   <aside class="colorStudioPanel">
+     <span class="eyebrow">RENK KOLEKSİYONU / 2026</span>
+     <h2 id="colorName">${esc(first)}</h2>
+     <p class="colorStudioIntro">Mimarinize uyum sağlayan yüzeyi seçin. Her dekor, pencerenizin karakterini yeniden tanımlar.</p>
+     <div class="colorStudioGrid">${DATA.colors.slice(0,9).map((c,i)=>`<button class="configColor ${i===0?'selected':''}" data-color="${i}" aria-pressed="${i===0}" style="--chip:${swatches[i]}"><span class="configSwatch"></span><span class="colorChoiceText"><b>${esc(c)}</b><small>${String(i+1).padStart(2,'0')}</small></span></button>`).join('')}</div>
+     <div class="colorStudioFoot"><span>RENK SEÇİMİ</span><p>Seçtiğiniz dekor, ürün teklifinizde ayrıca belirtilebilir.</p><a class="btn dark" href="/iletisim">BU RENKLE TEKLİF AL <span>↗</span></a></div>
    </aside>
  </section>
- <section class="section colorEditorial"><div class="sectionHead"><div><span class="eyebrow">KÖNİG / DETAY</span><h2>Tek pencere.<br><em>Dokuz karakter.</em></h2></div><p>Aynı pencere geometrisi korunur; yalnızca dış kasa, iç kasa, orta kayıt ve kanat profillerinin görsel rengi değişir. Cam ve kol bütün seçeneklerde aynıdır.</p></div></section>
+ <section class="section colorEditorial"><div class="sectionHead"><div><span class="eyebrow">KÖNİG / DETAY</span><h2>Tek pencere.<br><em>Dokuz karakter.</em></h2></div><p>Doğru renk, mimarinin bütünlüğünü tamamlar. KÖNİG renk koleksiyonunu inceleyin ve projenize uygun dekoru seçin.</p></div></section>
  </main>`
 }
 function technical(){return `<main>${pageHero('KÖNİG / TEKNİK MERKEZ','Teknik detay,<br><em>tasarımın temelidir.</em>','Katalogda doğrulanmış sistem bilgilerini tek yerde inceleyin.')}<section class="section"><div class="techBlocks"><a href="/karsilastir"><span>01</span><h3>Profil Sistemleri</h3><p>SLIDE · THERMO 81 · PRIME 60 · PRIME 70</p></a><div><span>02</span><h3>Conta Sistemleri</h3><p>TPE Gri / Siyah; sistem bazında conta sayısı ve tipi.</p></div><div><span>03</span><h3>Cam</h3><p>Sistemlere göre katalogda belirtilen cam kalınlıkları.</p></div><div><span>04</span><h3>Isı</h3><p>Kaynakta sayısal olarak verilen Uf değerleri gösterilir.</p></div><div><span>05</span><h3>Renk &amp; Dekor</h3><p>9 farklı renk/dekor seçeneği.</p></div><a href="/katalog"><span>06</span><h3>Teknik Dokümanlar</h3><p>KÖNİG kataloğunu tarayıcıda inceleyin.</p></a></div></section></main>`}
