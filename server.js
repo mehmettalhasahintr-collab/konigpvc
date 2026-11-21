@@ -6,19 +6,20 @@ import {URL, fileURLToPath} from 'node:url';
 import {put, get, list} from '@vercel/blob';
 
 const ROOT=path.dirname(fileURLToPath(import.meta.url)), PUBLIC=path.join(ROOT,'public'), DATA=path.join(ROOT,'data','db.json'), UP='/tmp/konig-uploads';
-const PORT=Number(process.env.PORT||3000); const SECRET=process.env.KONIG_SESSION_SECRET||'konig-local-secret-change-me';
+const PORT=Number(process.env.PORT||3000); const SECRET=process.env.KONIG_SESSION_SECRET||(process.env.VERCEL?'':'konig-local-secret-change-me');
+const DB_BLOB='konig/db.json';
 const IS_VERCEL=Boolean(process.env.VERCEL);
 fs.mkdirSync(UP,{recursive:true});
-function load(){return JSON.parse(fs.readFileSync(DATA,'utf8'))}
-function save(d){if(IS_VERCEL)return;fs.writeFileSync(DATA,JSON.stringify(d,null,2))}
+async function load(){if(IS_VERCEL){const t=await blobText(DB_BLOB);return t?JSON.parse(t):JSON.parse(fs.readFileSync(DATA,'utf8'))}return JSON.parse(fs.readFileSync(DATA,'utf8'))}
+async function save(d){const value=JSON.stringify(d,null,2);if(IS_VERCEL){await put(DB_BLOB,value,{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:true});return}fs.writeFileSync(DATA,value)}
 async function blobText(pathname){const r=await get(pathname,{access:'private'});if(!r||r.statusCode!==200)return null;const chunks=[];for await(const c of r.stream)chunks.push(Buffer.from(c));return Buffer.concat(chunks).toString('utf8')}
-async function getSubmissions(){if(!IS_VERCEL)return load().submissions||[];const {blobs}=await list({prefix:'konig/submissions/',limit:1000});const out=[];for(const b of blobs){const t=await blobText(b.pathname);if(t)try{out.push(JSON.parse(t))}catch{}}return out.sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)))}
-async function putSubmission(x){if(!IS_VERCEL){const db=load();db.submissions=db.submissions||[];db.submissions.push(x);save(db);return}await put(`konig/submissions/${x.id}.json`,JSON.stringify(x),{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:true})}
-async function updateSubmission(id,patch){if(!IS_VERCEL){const db=load();const i=(db.submissions||[]).findIndex(a=>a.id===id);if(i<0)return null;db.submissions[i]={...db.submissions[i],...patch};save(db);return db.submissions[i]}const pathname=`konig/submissions/${id}.json`;const t=await blobText(pathname);if(!t)return null;const x={...JSON.parse(t),...patch};await put(pathname,JSON.stringify(x),{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:true});return x}
+async function getSubmissions(){if(!IS_VERCEL)return (await load()).submissions||[];const {blobs}=await list({prefix:'konig/submissions/',limit:1000});const out=[];for(const b of blobs){const t=await blobText(b.pathname);if(t)try{out.push(JSON.parse(t))}catch{}}return out.sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)))}
+async function putSubmission(x){if(!IS_VERCEL){const db=await load();db.submissions=db.submissions||[];db.submissions.push(x);await await save(db);return}await put(`konig/submissions/${x.id}.json`,JSON.stringify(x),{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:true})}
+async function updateSubmission(id,patch){if(!IS_VERCEL){const db=await load();const i=(db.submissions||[]).findIndex(a=>a.id===id);if(i<0)return null;db.submissions[i]={...db.submissions[i],...patch};await save(db);return db.submissions[i]}const pathname=`konig/submissions/${id}.json`;const t=await blobText(pathname);if(!t)return null;const x={...JSON.parse(t),...patch};await put(pathname,JSON.stringify(x),{access:'private',contentType:'application/json',addRandomSuffix:false,allowOverwrite:true});return x}
 function hash(s){return crypto.createHash('sha256').update(s).digest('hex')}
 function sign(v){return crypto.createHmac('sha256',SECRET).update(v).digest('hex')}
 function cookie(v){return `konig_session=${v}.${sign(v)}; HttpOnly; Path=/; SameSite=Lax; Max-Age=86400`}
-function auth(req){const c=req.headers.cookie||'';const m=c.match(/konig_session=([^.;]+)\.([^;]+)/);if(!m||m[2]!==sign(m[1]))return false;return m[1].startsWith('admin-')}
+function auth(req){const c=req.headers.cookie||'';const m=c.match(/konig_session=([^.;]+)\.([^;]+)/);if(!SECRET||!m||m[2]!==sign(m[1]))return false;return m[1].startsWith('admin-')}
 function json(res,obj,status=200){const b=JSON.stringify(obj);res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(b)}
 function body(req){return new Promise((resolve,reject)=>{let a=[];req.on('data',c=>a.push(c));req.on('end',()=>resolve(Buffer.concat(a)));req.on('error',reject)})}
 function mime(f){return {'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.pdf':'application/pdf','.svg':'image/svg+xml'}[path.extname(f).toLowerCase()]||'application/octet-stream'}
@@ -63,10 +64,10 @@ async function notifyQuote(x){
 }
 
 const server=http.createServer(async(req,res)=>{try{
- const u=new URL(req.url,`http://${req.headers.host}`); const p=u.pathname; const db=load();
+ const u=new URL(req.url,`http://${req.headers.host}`); const p=u.pathname; const db=await load();
  if(p==='/api/health')return json(res,{ok:true});
  if(p==='/api/site')return json(res,{settings:db.settings,pages:db.pages,products:db.products.filter(x=>x.active),colors:db.colors,projects:db.projects.filter(x=>x.active),catalog:db.catalog});
- if(p==='/api/login'&&req.method==='POST'){const x=JSON.parse((await body(req)).toString()||'{}');if(x.username===db.admin.username&&hash(x.password||'')===db.admin.passwordHash){const sid='admin-'+crypto.randomBytes(18).toString('hex');res.writeHead(200,{'Set-Cookie':cookie(sid),'Content-Type':'application/json'});return res.end(JSON.stringify({ok:true}))}return json(res,{error:'Kullanıcı adı veya şifre hatalı.'},401)}
+ if(p==='/api/login'&&req.method==='POST'){if(!SECRET)return json(res,{error:'Admin güvenliği yapılandırılmamış. Vercel ortamına KONIG_SESSION_SECRET ekleyin.'},503);const x=JSON.parse((await body(req)).toString()||'{}');if(x.username===db.admin.username&&hash(x.password||'')===db.admin.passwordHash){const sid='admin-'+crypto.randomBytes(18).toString('hex');res.writeHead(200,{'Set-Cookie':cookie(sid),'Content-Type':'application/json'});return res.end(JSON.stringify({ok:true}))}return json(res,{error:'Kullanıcı adı veya şifre hatalı.'},401)}
  if(p==='/api/logout'&&req.method==='POST'){res.writeHead(200,{'Set-Cookie':'konig_session=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax','Content-Type':'application/json'});return res.end('{"ok":true}')} 
  if(p==='/api/quote'&&req.method==='POST'){
   const ct=req.headers['content-type']||'';
@@ -104,11 +105,11 @@ const server=http.createServer(async(req,res)=>{try{
    await notifyQuote(x);
   }catch(e){
    console.error('Teklif e-postası gönderilemedi:',e);
-   return json(res,{ok:false,saved:true,id:x.id,error:'Talebiniz kaydedildi ancak e-posta gönderilemedi. Lütfen daha sonra tekrar deneyin.'},502);
+   return json(res,{ok:true,saved:true,emailSent:false,id:x.id,message:'Talebiniz başarıyla kaydedildi. E-posta bildirimi şu anda gönderilemedi; ekibimiz talebinizi panelden görebilir.'},201);
   }
   return json(res,{ok:true,id:x.id},201);
  }
- if(p==='/api/admin/me')return json(res,{authenticated:auth(req)});
+ if(p==='/api/admin/me')return json(res,{authenticated:auth(req),configurationError:!SECRET});
  if(p.startsWith('/api/admin/')){if(!auth(req))return json(res,{error:'Yetkisiz erişim.'},401);const parts=p.split('/').filter(Boolean);const resource=parts[2];const id=parts[3];
    if(req.method==='GET'){
     if(resource==='db')return json(res,{...db,submissions:await getSubmissions()});
@@ -129,7 +130,7 @@ const server=http.createServer(async(req,res)=>{try{
    if(req.method==='PUT'&&resource==='catalog'){const x=JSON.parse((await body(req)).toString());db.catalog=x.catalog;save(db);return json(res,{ok:true,catalog:db.catalog})}
    if(req.method==='POST'&&resource==='password'){const x=JSON.parse((await body(req)).toString());if(!x.password||x.password.length<10)return json(res,{error:'Şifre en az 10 karakter olmalı.'},400);db.admin.passwordHash=hash(x.password);save(db);return json(res,{ok:true})}
    if(req.method==='POST'&&resource==='upload'){const b=await body(req);const fields=parseMultipart(b,req.headers['content-type']||'');const file=fields.file;if(!file||!file.filename)return json(res,{error:'Dosya bulunamadı'},400);const ext=path.extname(file.filename).toLowerCase();if(!['.jpg','.jpeg','.png','.webp','.pdf'].includes(ext))return json(res,{error:'Desteklenmeyen dosya.'},400);if(IS_VERCEL){const blob=await put(`konig/uploads/${Date.now()}-${file.filename}`,file.data,{access:'private',contentType:mime(file.filename),addRandomSuffix:false});return json(res,{ok:true,url:blob.pathname})}const name=Date.now()+'-'+file.filename;fs.writeFileSync(path.join(UP,name),file.data);return json(res,{ok:true,url:'/uploads/'+name})}
-   if(req.method==='PUT'&&resource==='db'){const x=JSON.parse((await body(req)).toString());if(!x||typeof x!=='object'||Array.isArray(x))return json(res,{error:'Geçersiz veri.'},400);save(x);return json(res,{ok:true})}
+   if(req.method==='PUT'&&resource==='db'){const x=JSON.parse((await body(req)).toString());if(!x||typeof x!=='object'||Array.isArray(x))return json(res,{error:'Geçersiz veri.'},400);await save(x);return json(res,{ok:true})}
    if(req.method==='GET'&&resource==='media'){if(IS_VERCEL){const {blobs}=await list({prefix:'konig/uploads/',limit:1000});return json(res,blobs.map(b=>({name:b.pathname,url:b.pathname,size:b.size}))) }const files=fs.readdirSync(UP).filter(f=>!f.startsWith('.')).map(name=>({name,url:'/uploads/'+name,size:fs.statSync(path.join(UP,name)).size}));return json(res,files)}
    if(req.method==='DELETE'&&resource==='media'&&id){if(IS_VERCEL)return json(res,{error:'Vercel medya silme bu sürümde devre dışı.'},501);const name=safeName(decodeURIComponent(id));const target=path.join(UP,name);if(!target.startsWith(UP)||!fs.existsSync(target))return json(res,{error:'Dosya bulunamadı'},404);fs.unlinkSync(target);return json(res,{ok:true})}
    return json(res,{error:'Admin endpoint bulunamadı'},404);
