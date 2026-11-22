@@ -415,3 +415,29 @@ html,body{max-width:100%;overflow-x:hidden}
 .locationsBand p{font-size:17px;line-height:1.8;color:#bbb;max-width:580px;margin:0}
 @media(max-width:1000px){.locationsGrid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.locationsSection{padding:64px 6vw 78px}.locationsIntro{grid-template-columns:1fr;gap:16px;margin-bottom:28px}.locationsIntro .eyebrow{grid-column:auto}.locationsGrid{grid-template-columns:1fr}.locationCard{padding:24px;min-height:0}.locationCard h3{font-size:26px;margin:22px 0}.locationsBand{grid-template-columns:1fr;gap:16px;padding:68px 7vw}.locationsBand .eyebrow{grid-column:auto}.locationsBand p{font-size:15px}}
+
+
+/* KÖNİG / premium dealer invitation */
+.dealerInvite{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:1.02fr .98fr;min-height:560px;background:#101112;color:#fff;margin:0 0 0}
+.dealerInviteCopy{position:relative;z-index:2;padding:clamp(48px,7vw,104px) clamp(28px,7vw,100px);display:flex;flex-direction:column;align-items:flex-start}
+.dealerInvite .eyebrow{display:flex;align-items:center;gap:11px;color:#a5a5a2;font:500 10px 'DM Mono',monospace;letter-spacing:.16em}
+.dealerInvite .eyebrow i{display:block;width:7px;height:7px;background:#e52b2b;border-radius:50%;box-shadow:0 0 15px rgba(229,43,43,.8)}
+.dealerKicker{margin:68px 0 17px;color:#aaa;font:500 10px 'DM Mono',monospace;letter-spacing:.19em}
+.dealerInvite h2{margin:0;font-size:clamp(48px,6.3vw,86px);line-height:.88;letter-spacing:-.075em;font-weight:600}
+.dealerInvite h2 em{font-style:normal;color:#ed3030}
+.dealerInviteText{max-width:440px;margin:26px 0 30px;color:#b8b8b5;font-size:15px;line-height:1.8}
+.dealerInviteCta{width:min(100%,360px);min-height:62px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;background:#e52b2b;color:#fff;text-decoration:none;font:600 11px 'DM Mono',monospace;letter-spacing:.1em;transition:background .2s,transform .2s}
+.dealerInviteCta:hover{background:#ff3838;transform:translateY(-2px)}
+.dealerInviteCta b{font-size:23px;font-weight:400}
+.dealerInviteCopy>small{margin-top:14px;color:#777;font-size:11px}
+.dealerInviteVisual{position:relative;min-height:560px;overflow:hidden;background:radial-gradient(ellipse at 56% 43%,#3a1718 0,#1b1112 36%,#111213 72%)}
+.dealerInviteVisual:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 20%,rgba(255,255,255,.035) 50%,transparent 75%),repeating-linear-gradient(135deg,transparent 0 38px,rgba(255,255,255,.025) 39px 40px)}
+.dealerVisualOrb{position:absolute;width:min(36vw,440px);aspect-ratio:1;left:50%;top:48%;transform:translate(-50%,-50%);border:1px solid rgba(236,48,48,.35);border-radius:50%;box-shadow:0 0 0 32px rgba(236,48,48,.035),0 0 0 74px rgba(236,48,48,.025),inset 0 0 70px rgba(236,48,48,.09)}
+.dealerVisualOrb:before,.dealerVisualOrb:after{content:"";position:absolute;border:1px solid rgba(236,48,48,.25);border-radius:50%;inset:13%}
+.dealerVisualOrb:after{inset:27%;background:radial-gradient(circle,rgba(235,42,42,.18),transparent 68%)}
+.dealerVisualNo{position:absolute;top:42px;right:42px;color:#8e8585;font:500 9px 'DM Mono',monospace;letter-spacing:.16em}
+.dealerVisualNo b{color:#e9e2e2;font-weight:500}
+.dealerVisualWord{position:absolute;left:10%;top:43%;transform:translateY(-50%);font-size:clamp(43px,6vw,82px);line-height:.82;letter-spacing:-.075em;font-weight:700;color:#fff;text-shadow:0 12px 40px rgba(0,0,0,.5)}
+.dealerVisualWord em{font-style:normal;color:#ed3030}
+.dealerVisualFoot{position:absolute;bottom:35px;left:10%;right:10%;display:flex;justify-content:space-between;gap:15px;padding-top:15px;border-top:1px solid rgba(255,255,255,.16);color:#8e8585;font:500 8px 'DM Mono',monospace;letter-spacing:.12em}
+@media(max-width:760px){.dealerInvite{grid-template-columns:1fr}.dealerInviteCopy{padding:58px 7vw 48px}.dealerKicker{margin-top:48px}.dealerInvite h2{font-size:clamp(48px,13vw,72px)}.dealerInviteText{font-size:14px}.dealerInviteVisual{min-height:300px}.dealerVisualOrb{width:260px}.dealerVisualWord{font-size:54px;left:8%;top:45%}.dealerVisualNo{top:24px;right:7%}.dealerVisualFoot{left:7%;right:7%;bottom:22px;font-size:7px}}
