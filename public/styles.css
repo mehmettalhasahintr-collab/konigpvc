@@ -464,3 +464,26 @@ html,body{max-width:100%;overflow-x:hidden}
 .dealerInviteStamp b{font-size:32px;letter-spacing:-.07em}
 .dealerInviteBottom{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;gap:15px;padding:18px clamp(28px,8vw,124px);border-top:1px solid rgba(255,255,255,.2);color:#d2d2cf;font:500 8px 'DM Mono',monospace;letter-spacing:.14em}
 @media(max-width:760px){.dealerInvite{min-height:650px;align-items:flex-start;background-position:58% center}.dealerInvite:before{background:linear-gradient(90deg,rgba(8,10,11,.94),rgba(8,10,11,.68)),linear-gradient(0deg,rgba(8,10,11,.65),transparent)}.dealerInviteCopy{width:100%;padding:66px 7vw 125px}.dealerKicker{margin:56px 0 16px;font-size:9px}.dealerInvite h2{font-size:clamp(55px,14vw,78px)}.dealerInviteText{font-size:14px;max-width:390px;margin:24px 0 26px}.dealerInviteCta{min-width:0;width:100%;min-height:58px}.dealerInviteStamp{width:105px;height:105px;right:7vw;top:auto;bottom:72px;transform:none;gap:5px}.dealerInviteStamp b{font-size:20px}.dealerInviteStamp span{font-size:6px}.dealerInviteBottom{padding:14px 7vw;font-size:7px}.dealerInviteBottom span:last-child{text-align:right}}
+
+
+/* KÖNİG / dealer application form */
+.dealerFormSection{display:grid;grid-template-columns:.8fr 1.2fr;gap:8vw;padding:105px clamp(28px,8vw,124px) 115px;background:#f1f1ee;color:#17191a}
+.dealerFormIntro .eyebrow{font:500 10px 'DM Mono',monospace;letter-spacing:.15em;color:#777}
+.dealerFormIntro h2{font-size:clamp(42px,5vw,68px);line-height:.92;letter-spacing:-.075em;margin:32px 0 22px}
+.dealerFormIntro h2 em{font-style:normal;color:#d92d32}
+.dealerFormIntro>p{max-width:370px;color:#656765;font-size:15px;line-height:1.8}
+.dealerForm{min-width:0}
+.dealerFormGrid{display:grid;grid-template-columns:1fr 1fr;gap:22px 18px}
+.dealerFormGrid label{display:flex;flex-direction:column;gap:9px;font-size:12px;font-weight:600;color:#303233}
+.dealerFormGrid label span{display:inline;color:#888;font-weight:400}
+.dealerFormGrid input,.dealerFormGrid select,.dealerFormGrid textarea{width:100%;min-height:50px;padding:13px 14px;border:1px solid #d4d5d1;border-radius:0;background:#fafaf8;color:#17191a;font:400 14px inherit;outline:none}
+.dealerFormGrid textarea{min-height:112px;resize:vertical}
+.dealerFormGrid input:focus,.dealerFormGrid select:focus,.dealerFormGrid textarea:focus{border-color:#d92d32;box-shadow:0 0 0 2px rgba(217,45,50,.09)}
+.dealerFormWide{grid-column:1/-1}
+.dealerConsent{display:flex;align-items:flex-start;gap:11px;margin:25px 0;color:#565957;font-size:12px;line-height:1.6}
+.dealerConsent input{width:17px;height:17px;flex:none;accent-color:#d92d32;margin:1px 0 0}
+.dealerSubmit{border:0;cursor:pointer;font-family:'DM Mono',monospace}
+.dealerSubmit:disabled{opacity:.65;cursor:wait}
+.dealerFormStatus{min-height:22px;margin:14px 0 5px;color:#333;font-size:13px;line-height:1.6}
+.dealerForm>small{color:#888;font-size:11px}
+@media(max-width:760px){.dealerFormSection{grid-template-columns:1fr;gap:34px;padding:72px 7vw 80px}.dealerFormIntro h2{font-size:50px;margin:24px 0 16px}.dealerFormIntro>p{font-size:14px}.dealerFormGrid{grid-template-columns:1fr;gap:17px}.dealerFormWide{grid-column:auto}.dealerFormGrid input,.dealerFormGrid select{min-height:52px}.dealerSubmit{width:100%;min-width:0}}
