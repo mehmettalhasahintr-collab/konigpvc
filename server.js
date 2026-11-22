@@ -30,12 +30,17 @@ async function notifyQuote(x){
  const key=process.env.RESEND_API_KEY;
  if(!key)throw new Error('E-posta servisi yapılandırılmamış (RESEND_API_KEY eksik).');
  const text=[
-  'YENİ KÖNİG TALEBİ',
+  x.formType==='dealer'?'YENİ KÖNİG BAYİLİK BAŞVURUSU':'YENİ KÖNİG TALEBİ',
   '',
   `Ad Soyad: ${x.name||'-'}`,
   `Firma: ${x.company||'-'}`,
   `Telefon: ${x.phone||'-'}`,
   `E-posta: ${x.email||'-'}`,
+  `İl / İlçe: ${[x.city,x.district].filter(Boolean).join(' / ')||'-'}`,
+  `PVC sektör deneyimi: ${x.experience||'-'}`,
+  `Faaliyet alanı: ${x.businessType||'-'}`,
+  `Mağaza / showroom: ${x.showroom||'-'}`,
+  `PVC sektöründe aktif çalışma onayı: ${x.pvcSector||'-'}`,
   `Proje türü: ${x.projectType||'-'}`,
   `Proje konumu: ${x.location||'-'}`,
   `Proje büyüklüğü: ${x.size||'-'}`,
@@ -46,7 +51,7 @@ async function notifyQuote(x){
  const payload={
   from:process.env.NOTIFY_FROM||'KONİG <onboarding@resend.dev>',
   to:[to],
-  subject:`Yeni KÖNİG proje teklifi — ${x.name||'Müşteri'}`,
+  subject:x.formType==='dealer'?`Yeni KÖNİG bayilik başvurusu — ${x.company||x.name}`:`Yeni KÖNİG proje teklifi — ${x.name||'Müşteri'}`,
   reply_to:x.email,
   text
  };
@@ -92,11 +97,14 @@ const server=http.createServer(async(req,res)=>{try{
    }
   }else{x=JSON.parse((await body(req)).toString()||'{}')}
   x.projectType=x.projectType||x.type||'';
+  x.formType=String(x.formType||'quote');
   x.name=String(x.name||'').trim();
   x.phone=String(x.phone||'').trim();
   x.email=String(x.email||'').trim();
   if(!x.name||!x.phone||!x.email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x.email))
    return json(res,{ok:false,error:'Lütfen ad soyad, telefon ve geçerli e-posta adresinizi doldurun.'},400);
+  if(x.formType==='dealer'&&(!x.company||!x.city||!x.district||!x.experience||!x.businessType||!x.showroom||!x.pvcSector)) return json(res,{ok:false,error:'Bayilik başvurusu için zorunlu alanları doldurun ve PVC sektöründe aktif çalıştığınızı onaylayın.'},400);
+  if(x.formType==='dealer'&&x.pvcSector!=='Evet, PVC sektöründe aktif çalışıyorum') return json(res,{ok:false,error:'Bayilik başvuruları yalnızca PVC sektöründe aktif çalışan işletmeler içindir.'},400);
   x.id=crypto.randomUUID();
   x.createdAt=new Date().toISOString();
   x.status='new';
