@@ -394,3 +394,24 @@ html,body{max-width:100%;overflow-x:hidden}
 /* KÖNİG / Kayseri address page */
 .addressPage{display:grid;grid-template-columns:1.2fr .8fr;gap:8vw;align-items:start;padding-top:100px;padding-bottom:110px}.addressMain h2,.addressBand h2{font-size:clamp(48px,6.5vw,94px);line-height:.88;letter-spacing:-.075em;margin:0 0 28px}.addressLead{font-size:18px;line-height:1.75;color:var(--muted);max-width:650px;margin:0 0 45px}.addressLine{border-top:1px solid var(--line);padding:24px 0}.addressLine b,.addressContact b{font:500 10px 'DM Mono',monospace;letter-spacing:.13em;color:#777}.addressLine p{font-size:17px;line-height:1.7;max-width:650px}.addressActions{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}.addressContact{background:#ececea;padding:38px;display:grid;gap:25px}.addressContact>div{border-top:1px solid #d2d3cf;padding-top:18px;display:grid;gap:10px}.addressContact a{font-size:16px;overflow-wrap:anywhere}.addressBand{background:#151719;color:white;padding:100px 8vw;display:grid;grid-template-columns:1fr 1fr;gap:9vw;align-items:center}.addressBand .eyebrow{color:#aaa}.addressBand p{font-size:18px;line-height:1.8;color:#bbb;max-width:620px}
 @media(max-width:700px){.addressPage{grid-template-columns:1fr;gap:35px;padding:75px 7vw}.addressContact{padding:28px}.addressBand{grid-template-columns:1fr;gap:20px;padding:75px 7vw}.addressActions .btn{width:100%}}
+
+/* KÖNİG / three-location directory */
+.locationsSection{padding-top:82px;padding-bottom:110px}
+.locationsIntro{display:grid;grid-template-columns:1fr 1fr;gap:18px 8vw;align-items:end;margin-bottom:42px}
+.locationsIntro .eyebrow{grid-column:1/-1}
+.locationsIntro h2,.locationsBand h2{font-size:clamp(44px,6vw,82px);line-height:.9;letter-spacing:-.075em;margin:0}
+.locationsIntro p{font-size:16px;line-height:1.7;color:var(--muted);max-width:460px;margin:0}
+.locationsGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.locationCard{background:#f0f0ed;border:1px solid var(--line);padding:28px;display:flex;flex-direction:column;min-height:350px}
+.locationCardTop{display:flex;justify-content:space-between;gap:8px;padding-bottom:18px;border-bottom:1px solid #d4d4d0;color:#777;font:500 9px 'DM Mono',monospace;letter-spacing:.1em}
+.locationCard h3{font-size:clamp(21px,2vw,29px);line-height:1.1;letter-spacing:-.045em;margin:26px 0}
+.locationAddress,.locationPhone{margin-bottom:20px}
+.locationAddress b,.locationPhone b{font:500 9px 'DM Mono',monospace;letter-spacing:.13em;color:#777}
+.locationAddress p{font-size:14px;line-height:1.65;margin:8px 0 0}
+.locationPhone a{display:block;margin-top:8px;font-size:17px;font-weight:600}
+.locationMap{margin-top:auto;justify-content:center;text-align:center;font-size:10px;padding:15px 12px}
+.locationsBand{background:#151719;color:#fff;padding:88px 8vw;display:grid;grid-template-columns:1fr 1fr;gap:20px 8vw;align-items:center}
+.locationsBand .eyebrow{color:#aaa;grid-column:1/-1}
+.locationsBand p{font-size:17px;line-height:1.8;color:#bbb;max-width:580px;margin:0}
+@media(max-width:1000px){.locationsGrid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.locationsSection{padding:64px 6vw 78px}.locationsIntro{grid-template-columns:1fr;gap:16px;margin-bottom:28px}.locationsIntro .eyebrow{grid-column:auto}.locationsGrid{grid-template-columns:1fr}.locationCard{padding:24px;min-height:0}.locationCard h3{font-size:26px;margin:22px 0}.locationsBand{grid-template-columns:1fr;gap:16px;padding:68px 7vw}.locationsBand .eyebrow{grid-column:auto}.locationsBand p{font-size:15px}}
