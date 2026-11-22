@@ -441,3 +441,26 @@ html,body{max-width:100%;overflow-x:hidden}
 .dealerVisualWord em{font-style:normal;color:#ed3030}
 .dealerVisualFoot{position:absolute;bottom:35px;left:10%;right:10%;display:flex;justify-content:space-between;gap:15px;padding-top:15px;border-top:1px solid rgba(255,255,255,.16);color:#8e8585;font:500 8px 'DM Mono',monospace;letter-spacing:.12em}
 @media(max-width:760px){.dealerInvite{grid-template-columns:1fr}.dealerInviteCopy{padding:58px 7vw 48px}.dealerKicker{margin-top:48px}.dealerInvite h2{font-size:clamp(48px,13vw,72px)}.dealerInviteText{font-size:14px}.dealerInviteVisual{min-height:300px}.dealerVisualOrb{width:260px}.dealerVisualWord{font-size:54px;left:8%;top:45%}.dealerVisualNo{top:24px;right:7%}.dealerVisualFoot{left:7%;right:7%;bottom:22px;font-size:7px}}
+
+
+/* KÖNİG dealer invitation — production-led editorial banner */
+.dealerInvite{position:relative;isolation:isolate;min-height:610px;overflow:hidden;display:flex;align-items:center;background:#141617 url('/assets/factory-floor.jpeg') center 48%/cover no-repeat;color:#fff}
+.dealerInvite:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(8,10,11,.97) 0%,rgba(8,10,11,.91) 39%,rgba(8,10,11,.48) 72%,rgba(8,10,11,.18) 100%),linear-gradient(0deg,rgba(8,10,11,.58),transparent 42%)}
+.dealerInviteShade{position:absolute;inset:0;z-index:-1;background:linear-gradient(115deg,transparent 0 67%,rgba(190,24,28,.22) 100%);pointer-events:none}
+.dealerInviteCopy{width:min(760px,72%);padding:100px clamp(28px,8vw,124px) 112px;position:relative;z-index:1}
+.dealerInvite .eyebrow{display:flex;align-items:center;gap:10px;color:#d2d2cf;font:500 10px 'DM Mono',monospace;letter-spacing:.17em}
+.dealerInvite .eyebrow i{display:block;width:7px;height:7px;background:#e52b2b;border-radius:50%;box-shadow:0 0 14px rgba(229,43,43,.75)}
+.dealerKicker{margin:72px 0 18px;color:#c2c2bf;font:500 10px 'DM Mono',monospace;letter-spacing:.2em}
+.dealerInvite h2{margin:0;color:#fff;font-size:clamp(58px,7.6vw,108px);line-height:.84;letter-spacing:-.085em;font-weight:650}
+.dealerInvite h2 em{font-style:normal;color:#ef3434}
+.dealerInviteText{max-width:480px;margin:30px 0 34px;color:#dededb;font-size:16px;line-height:1.8}
+.dealerInviteCta{display:inline-flex;align-items:center;justify-content:space-between;gap:45px;min-width:310px;min-height:62px;padding:0 21px;background:#e52b2b;color:#fff;text-decoration:none;font:600 10px 'DM Mono',monospace;letter-spacing:.1em;transition:background .2s,transform .2s}
+.dealerInviteCta:hover{background:#ff3b3b;transform:translateY(-2px)}
+.dealerInviteCta b{font-size:22px;font-weight:400}
+.dealerInviteCopy>small{display:block;margin-top:15px;color:#b1b1ad;font-size:11px}
+.dealerInviteStamp{position:absolute;right:clamp(30px,8vw,120px);top:50%;transform:translateY(-50%);width:190px;height:190px;border:1px solid rgba(255,255,255,.46);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;color:#fff;background:rgba(12,14,15,.18);backdrop-filter:blur(3px)}
+.dealerInviteStamp:before{content:"";position:absolute;inset:9px;border:1px solid rgba(255,255,255,.2);border-radius:50%}
+.dealerInviteStamp span{font:500 8px 'DM Mono',monospace;letter-spacing:.15em;color:#dededb}
+.dealerInviteStamp b{font-size:32px;letter-spacing:-.07em}
+.dealerInviteBottom{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;gap:15px;padding:18px clamp(28px,8vw,124px);border-top:1px solid rgba(255,255,255,.2);color:#d2d2cf;font:500 8px 'DM Mono',monospace;letter-spacing:.14em}
+@media(max-width:760px){.dealerInvite{min-height:650px;align-items:flex-start;background-position:58% center}.dealerInvite:before{background:linear-gradient(90deg,rgba(8,10,11,.94),rgba(8,10,11,.68)),linear-gradient(0deg,rgba(8,10,11,.65),transparent)}.dealerInviteCopy{width:100%;padding:66px 7vw 125px}.dealerKicker{margin:56px 0 16px;font-size:9px}.dealerInvite h2{font-size:clamp(55px,14vw,78px)}.dealerInviteText{font-size:14px;max-width:390px;margin:24px 0 26px}.dealerInviteCta{min-width:0;width:100%;min-height:58px}.dealerInviteStamp{width:105px;height:105px;right:7vw;top:auto;bottom:72px;transform:none;gap:5px}.dealerInviteStamp b{font-size:20px}.dealerInviteStamp span{font-size:6px}.dealerInviteBottom{padding:14px 7vw;font-size:7px}.dealerInviteBottom span:last-child{text-align:right}}
